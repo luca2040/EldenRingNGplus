@@ -2,6 +2,10 @@
 
 This mod lets you change the current level of New Game Plus.
 
+<p align="center">
+<img alt="Image" src="https://github.com/user-attachments/assets/f1f89af1-683c-423c-95bc-8c2deff1fba5" />
+</p>
+
 ### Usage
 
 To use this mod simply press `Ctrl + Shift + P` and a window asking for the new NG+ level will appear. Then type in the box the number you want to change it to and press the OK button.
