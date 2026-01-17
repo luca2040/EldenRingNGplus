@@ -2,7 +2,7 @@
 
 struct GameDataMan
 {
-  unsigned char unk0[0x120];
-  uint32_t ng_lv;
-  unsigned char unk1[0x034];
+  unsigned char _unk0[0x120];
+  uint32_t ngLvl;
+  unsigned char _unk1[0x034];
 };

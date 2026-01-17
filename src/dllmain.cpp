@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 
+#include "utils.h"
 #include "structures.h"
 
 #define loop for (;;)
@@ -14,29 +15,9 @@ constexpr DWORD fps50ms = 1000 / 50;
 
 GameDataMan **gameDataManAddr;
 
-bool strToU32(const char *input, unsigned int &outValue)
-{
-    if (!input || *input == '\0')
-        return false;
-
-    errno = 0;
-    char *endPtr = nullptr;
-    unsigned long val = std::strtoul(input, &endPtr, 10);
-
-    if (errno == ERANGE || val > UINT_MAX)
-        return false;
-
-    if (*endPtr != '\0')
-        return false;
-
-    outValue = static_cast<unsigned int>(val);
-    return true;
-}
-
 void modMain()
 {
     std::cout << "Starting " << modName << std::endl;
-    SetProcessDPIAware();
 
     MemoryPattern gameDataManScan{"48 8B 05 ? ? ? ? 48 85 C0 74 05 48 8B 40 58 C3 C3"};
     Scanlib_AddPattern(&gameDataManScan);
@@ -67,35 +48,33 @@ void modMain()
     loop
     {
         if (gameDataManAddr &&
-            *gameDataManAddr)
+            *gameDataManAddr &&
+            (GetAsyncKeyState(VK_CONTROL) & 0x8000) &&
+            (GetAsyncKeyState(VK_SHIFT) & 0x8000) &&
+            (GetAsyncKeyState('P') & 0x8000))
         {
-            if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) &&
-                (GetAsyncKeyState(VK_SHIFT) & 0x8000) &&
-                (GetAsyncKeyState('P') & 0x8000))
-            {
-                const char *input = tinyfd_inputBox(
-                    "Change new game plus level",
-                    "Enter new NG+ level",
-                    std::to_string((*gameDataManAddr)->ng_lv).c_str());
+            const char *input = tinyfd_inputBox(
+                "Change new game plus level",
+                "Enter new NG+ level",
+                std::to_string((*gameDataManAddr)->ngLvl).c_str());
 
-                if (input)
+            if (input)
+            {
+                unsigned int newNGval;
+                bool parsedVal = strToUInt(input, newNGval);
+                if (parsedVal)
                 {
-                    unsigned int newNGval;
-                    bool parsedVal = strToU32(input, newNGval);
-                    if (parsedVal)
-                    {
-                        std::cout << "Value entered: " << newNGval << std::endl;
-                        (*gameDataManAddr)->ng_lv = newNGval;
-                    }
-                    else
-                    {
-                        std::cout << "Invalid input" << std::endl;
-                    }
+                    std::cout << "Value entered: " << newNGval << std::endl;
+                    (*gameDataManAddr)->ngLvl = newNGval;
                 }
                 else
                 {
-                    std::cout << "Input canceled" << std::endl;
+                    std::cout << "Invalid input" << std::endl;
                 }
+            }
+            else
+            {
+                std::cout << "Input canceled" << std::endl;
             }
         }
 
